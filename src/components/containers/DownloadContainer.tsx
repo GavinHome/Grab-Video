@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useRef, useState } from 'react';
+import React, { memo, useRef, useState, useEffect } from 'react';
 import useSWR, { mutate } from 'swr';
 import { toast } from 'react-toastify';
 import { IoClose } from 'react-icons/io5';
@@ -10,10 +10,11 @@ import {
   AiOutlineLoading3Quarters,
   AiOutlineSearch
 } from 'react-icons/ai';
-import { HiOutlineBarsArrowDown, HiOutlineBarsArrowUp, HiOutlinePencil } from 'react-icons/hi2';
+import { HiOutlineChevronDown, HiOutlineChevronUp, HiOutlinePencil } from 'react-icons/hi2';
 import { MdContentPaste } from 'react-icons/md';
 import type { PlaylistMetadata, SelectQuality, VideoMetadata } from '@/types/video';
 import { useDownloadFormStore } from '@/store/downloadForm';
+import { useSiteSettingStore } from '@/store/siteSetting';
 import { CookiesEditor } from '@/components/modules/CookiesEditor';
 import { shallow } from 'zustand/shallow';
 import { PatternFormat } from 'react-number-format';
@@ -136,31 +137,49 @@ type DownloadFormProps = {
 };
 
 const DownloadForm = memo(({ onSubmit }: DownloadFormProps) => {
+  const { layoutMode } = useSiteSettingStore((state) => ({ layoutMode: state.layoutMode }), shallow);
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(true);
+
+  // 当布局模式为vertical时，默认收起高级选项
+  useEffect(() => {
+    setShowAdvancedOptions(layoutMode !== 'vertical');
+  }, [layoutMode]);
+
   return (
     <form className='flex flex-col py-2 gap-y-2' method='GET' onSubmit={onSubmit}>
-      <UrlFieldOption />
-      <ResolutionAndCodecOptions />
-      <CookieOption />
-      <Card className='p-2 rounded-md bg-card-nested border-none'>
-        <CardDescription className='text-warning-foreground text-sm mb-1'>
-          The options below are excluded for <b>livestreams</b> and <b>playlist</b> downloads.
-        </CardDescription>
-        <div className='flex flex-col gap-y-2'>
-          <FileNameOption />
-          <CutVideoOption />
-          <EmbedSubtitlesOption />
-          <EmbedChapterMarkersOption />
-        </div>
-      </Card>
-      <LiveFromStartOption />
-      <ProxyOption />
+      {/* 只保留URL和下载按钮在高级配置外 */}
+      <UrlFieldOption showAdvancedOptions={showAdvancedOptions} setShowAdvancedOptions={setShowAdvancedOptions} />
+      
+      {/* 所有布局模式下都根据状态显示/隐藏 */}
+      {showAdvancedOptions && (
+        <>
+          <ResolutionAndCodecOptions />
+          <CookieOption />
+          <Card className='p-2 rounded-md bg-card-nested border-none'>
+            <CardDescription className='text-warning-foreground text-sm mb-1'>
+              The options below are excluded for <b>livestreams</b> and <b>playlist</b> downloads.
+            </CardDescription>
+            <div className='flex flex-col gap-y-2'>
+              <FileNameOption />
+              <CutVideoOption />
+              <EmbedSubtitlesOption />
+              <EmbedChapterMarkersOption />
+            </div>
+          </Card>
+          <LiveFromStartOption />
+          <ProxyOption />
+        </>
+      )}
     </form>
   );
 }, isPropsEquals);
 
 DownloadForm.displayName = 'DownloadForm';
 
-const UrlFieldOption = () => {
+const UrlFieldOption = ({ showAdvancedOptions, setShowAdvancedOptions }: {
+  showAdvancedOptions: boolean;
+  setShowAdvancedOptions: (show: boolean) => void;
+}) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { hydrated, isFetching, enableDownloadNow, url, setUrl } = useDownloadFormStore(
     ({ hydrated, isFetching, enableDownloadNow, url, setUrl }) => ({
@@ -172,6 +191,7 @@ const UrlFieldOption = () => {
     }),
     shallow
   );
+  const { layoutMode } = useSiteSettingStore((state) => ({ layoutMode: state.layoutMode }), shallow);
   const isNotHydrated = !hydrated;
 
   const handleChangeUrl = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -230,7 +250,7 @@ const UrlFieldOption = () => {
           </Button>
         )}
       </div>
-      <div className='shrink-0 flex items-center justify-end'>
+      <div className='shrink-0 flex items-center justify-end gap-x-1'>
         <Button
           type='submit'
           size='sm'
@@ -245,7 +265,7 @@ const UrlFieldOption = () => {
               ) : (
                 <AiOutlineCloudDownload className='h-4 w-4' />
               )}
-              <span className='hidden xs:inline'>Download</span>
+              <span className='hidden sm:inline'>Download</span>
             </>
           ) : (
             <>
@@ -254,7 +274,25 @@ const UrlFieldOption = () => {
               ) : (
                 <AiOutlineSearch className='h-4 w-4' />
               )}
-              <span className='hidden xs:inline'>Search</span>
+              <span className='hidden sm:inline'>Search</span>
+            </>
+          )}
+        </Button>
+        {/* 在所有布局模式下都显示展开/收起按钮 */}
+        <Button 
+          type="button" 
+          variant="ghost" 
+          size="sm"
+          className="flex items-center gap-x-1 h-8 px-2 rounded-full text-sm"
+          onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
+        >
+          {showAdvancedOptions ? (
+            <>
+              <HiOutlineChevronUp className="h-4 w-4" />
+            </>
+          ) : (
+            <>
+              <HiOutlineChevronDown className="h-4 w-4" />
             </>
           )}
         </Button>
@@ -620,9 +658,9 @@ const EmbedSubtitlesOption = () => {
             >
               Choose subtitles
               {open ? (
-                <HiOutlineBarsArrowUp className='inline' />
+                <HiOutlineChevronUp className='inline' />
               ) : (
-                <HiOutlineBarsArrowDown className='inline' />
+                <HiOutlineChevronDown className='inline' />
               )}
             </Button>
           </>
