@@ -18,7 +18,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
         <link rel='icon' href='/favicon_48x48.png' sizes='48x48' />
         <link rel='icon' href='/favicon_92x92.png' sizes='92x92' />
         <link rel='icon' href='/favicon_144x144.png' sizes='144x144' />
-        <link rel='icon' href='/favicon.ico' sizes='14x14' />
+        <link rel='icon' href='/favicon.ico' sizes='32x32' />
       </head>
       <body className={cn(inter.className, 'min-w-[var(--site-min-width)]')}>
         {/* <Header /> */}
