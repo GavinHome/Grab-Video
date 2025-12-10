@@ -30,9 +30,9 @@ export function Header() {
   return (
     <div className='flex gap-x-1 sm:gap-x-2 items-center justify-between'>
       <h1 className='grow shrink-0 inline-flex sm:text-lg whitespace-nowrap'>{process.env.NEXT_PUBLIC_APP_NAME}</h1>
-      <div className='flex-auto max-w-[--site-min-width] ml-auto text-right'>
+      {/* <div className='flex-auto max-w-[--site-min-width] ml-auto text-right'>
         <StorageStat />
-      </div>
+      </div> */}
       <ThemeToggle />
       <Button 
         variant='ghost' 
