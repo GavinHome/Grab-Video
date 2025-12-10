@@ -1,7 +1,10 @@
 import path from 'path';
+import { isDevelopment } from '@/lib/utils';
 
-export const DOWNLOAD_PATH = path.join('/', 'downloads');
-export const CACHE_PATH = path.join('/', 'cache');
+const BASE_PATH = isDevelopment ? process.cwd() : '/';
+
+export const DOWNLOAD_PATH = path.join(BASE_PATH, 'downloads');
+export const CACHE_PATH = path.join(BASE_PATH, 'cache');
 
 export const VIDEO_LIST_FILE = 'video-list';
 export const COOKIES_FILE = 'cookies';

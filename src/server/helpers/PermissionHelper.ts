@@ -4,6 +4,7 @@ import { spawn } from 'child_process';
 
 import { lruCache } from '@/server/lruCache';
 import { CACHE_PATH, DOWNLOAD_PATH, WRITE_TEST_FILE } from '@/server/constants';
+import { isDevelopment } from '@/lib/utils';
 
 const MOUNT_TEST = 'mount-test';
 
@@ -15,6 +16,10 @@ async function checkCacheFolderIsAccessible() {
     if (cacheData) {
       return true;
     }
+
+    // 先创建目录
+    await fs.mkdir(CACHE_PATH, { recursive: true });
+
     //! fs.access는 실제 권한이 없어도 사용 가능하다고 뜬다. writeFile로 사용하기
     await fs.writeFile(filePath, WRITE_TEST_FILE, 'utf-8');
 
@@ -39,6 +44,10 @@ async function checkDownloadFolderIsAccessible() {
     if (cacheData) {
       return true;
     }
+
+    // 先创建目录
+    await fs.mkdir(DOWNLOAD_PATH, { recursive: true });
+
     //! fs.access는 실제 권한이 없어도 사용 가능하다고 뜬다. writeFile로 사용하기
     await fs.writeFile(filePath, WRITE_TEST_FILE, 'utf-8');
 
@@ -77,6 +86,12 @@ export async function checkRequiredFoldersAreAccessible() {
 }
 
 export async function checkRequiredFoldersAreMounted() {
+
+  // 在开发环境下跳过挂载检查，因为macOS没有/proc/mounts文件
+  if (isDevelopment) {
+    return true;
+  }
+
   try {
     const cacheData = lruCache.get(MOUNT_TEST);
 
