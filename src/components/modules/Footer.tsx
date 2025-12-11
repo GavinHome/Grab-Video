@@ -7,7 +7,7 @@ export function Footer() {
         <span className='bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent'>Powered By</span> {' '}
         <a
           className='hover:underline'
-          href='https://github.com/sooros5132/yt-dlp-web'
+          href='https://github.com/gavinhome/yt-dlp-web'
           rel='noopener noreferrer'
           target='_blank'
         >

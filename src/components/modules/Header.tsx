@@ -31,7 +31,7 @@ export function Header() {
   return (
     <div className='flex gap-x-1 sm:gap-x-2 items-center justify-between'>
       <Link href='/' className='grow shrink-0 inline-flex items-center gap-2 sm:text-lg whitespace-nowrap'>
-        <Image src='/logo.png' alt={process.env.NEXT_PUBLIC_APP_NAME || 'yt-dlp-web'} width={64} height={64} className='h-8 sm:h-10 w-auto' />
+        <Image src='/logo.png' alt={process.env.NEXT_PUBLIC_APP_NAME || 'Grab Video'} width={64} height={64} className='h-8 sm:h-10 w-auto' />
         <span className='font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent'>Grab Video</span>
       </Link>
       {/* <div className='flex-auto max-w-[--site-min-width] ml-auto text-right'>
